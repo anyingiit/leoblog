@@ -5,7 +5,8 @@ import {fileURLToPath} from 'node:url';
 export function createPreview(root) {
 root=path.resolve(root);
 const files=new Map([['/','index.html'],['/posts/hello-world','posts/hello-world/index.html'],
-  ['/posts/hello-world/','posts/hello-world/index.html'],['/404.html','404.html']]);
+  ['/posts/hello-world/','posts/hello-world/index.html'],['/404.html','404.html'],
+  ['/sitemap.xml','sitemap.xml'],['/robots.txt','robots.txt']]);
 const server=http.createServer((req,res)=>{
   if (!['GET','HEAD'].includes(req.method)) {res.writeHead(405);res.end();return;}
   let pathname;try {
@@ -14,7 +15,8 @@ const server=http.createServer((req,res)=>{
     decodeURIComponent(pathname); // reject malformed percent encoding; never use decoded text as a file path
   }catch {res.writeHead(400);res.end();return;}
   const found=files.get(pathname);const bytes=fs.readFileSync(path.join(root,found||'404.html'));
-  res.writeHead(found&&pathname!=='/404.html'?200:404,{'Content-Type':'text/html; charset=utf-8','Content-Length':bytes.length});
+  const contentType=pathname==='/sitemap.xml'?'application/xml; charset=utf-8':pathname==='/robots.txt'?'text/plain; charset=utf-8':'text/html; charset=utf-8';
+  res.writeHead(found&&pathname!=='/404.html'?200:404,{'Content-Type':contentType,'Content-Length':bytes.length});
   res.end(req.method==='HEAD'?undefined:bytes);
 });
 return server;
