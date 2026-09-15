@@ -1,19 +1,19 @@
 # Leoblog 当前进度
 
-> **执行中（2026-09-16）**：Vercel 权限已恢复，API 可读 1 个 Hobby 团队、7 个项目及 `leoblog-route-b` 的 5 个 READY 生产部署；Neon 也已连接并完成只读项目/权限核查。T030 与 T036 的最新独立审查发现可复现的信任边界缺口，已分别进入限定范围的 Luna/max 修复；T024 与 T031–T034 继续按各自门禁并行。没有把本地代码通过提前记成 provider/live 验收。
+> **执行中（2026-09-16）**：T024 本地 authority runtime 已完成 canonical 与独立终审，进度更新为 50/65，并释放 T026 的 protected-tail 实现。T026 当前占用唯一 heavy 槽；T031 的 121 项修复已进入独立复审，T033 的 61 项修复也在终审；T030、T032、T034、T036 按各自冻结边界并行修复。Vercel 权限恢复后的 API 读回正常；Neon 托管验收继续与本地 PostgreSQL 证据分开记录。
 
 [Linear 项目进度](https://linear.app/workspacebyleo/project/leoblog-5053e197f739) · [当前预览](https://6f0d77f7.leoblog-prod.pages.dev/) · [正式站点](https://douseful.eu.org/)
 
-中央状态快照：2026-09-15T21:06:48Z。记录中的时间不代表持续实时探测。
+中央状态快照：2026-09-15T22:24:08.950498+00:00。记录中的时间不代表持续实时探测。
 
-任务共 **65** 项：已完成 **49**，未完成 **16**。任务完成与线上发布分别计数。
+任务共 **65** 项：已完成 **50**，未完成 **15**。任务完成与线上发布分别计数。
 
 | 状态 | 数量 |
 | --- | --- |
 | blocked_provider_readback | 1 |
-| 已完成 | 49 |
+| 已完成 | 50 |
 | in_progress | 7 |
-| 待开始 | 8 |
+| 待开始 | 7 |
 
 ## 版本、PR 与公开入口
 
@@ -43,7 +43,7 @@
 | 任务 | 状态 | 负责方 | 下一动作 | 情况/原因 |
 | --- | --- | --- | --- | --- |
 | T021 | blocked_provider_readback | Agent | 补充 Oracle、网盘、监测、scheduler 和路由只读资源清单 | 见所属任务输入 |
-| T024 | in_progress | Agent | 实现非测试身份连接与 live 证明验证，保留默认 OFF | 见所属任务输入 |
+| T026 | in_progress | Agent | 实现独立删除 tail/witness 适配与故障读回 | 见所属任务输入 |
 | T030 | in_progress | Agent | 实现选定标准工具的流式加密封装及密钥句柄边界 | 见所属任务输入 |
 | T031 | in_progress | Agent | 实现 Google Drive 单目标上传和严格对象版本读回 | 见所属任务输入 |
 | T032 | in_progress | Agent | 实现 OneDrive 单目标上传和严格对象版本读回 | 见所属任务输入 |
