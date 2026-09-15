@@ -2,15 +2,14 @@
 
 项目看板：[Linear — leoblog](https://linear.app/workspacebyleo/project/leoblog-5053e197f739)
 
-中央状态快照：2026-09-15T15:37:33.420984+00:00。记录中的时间不代表持续实时探测。
+中央状态快照：2026-09-15T16:00:51.098317+00:00。记录中的时间不代表持续实时探测。
 
 任务共 **65** 项：已完成 **48**，未完成 **17**。任务完成与线上发布分别计数。
 
 | 状态 | 数量 |
 | --- | --- |
 | 已完成 | 48 |
-| hosted_pending | 1 |
-| in_progress | 7 |
+| in_progress | 8 |
 | 部分证据 | 1 |
 | 待开始 | 8 |
 
@@ -62,7 +61,7 @@
 | T032 | in_progress | Agent | 实现 OneDrive 单目标上传和严格对象版本读回 | 见所属任务输入 |
 | T033 | in_progress | Agent | 实现持久 daily 调度、截止点与恢复后不重复执行 | 见所属任务输入 |
 | T034 | in_progress | Agent | 实现独立 missed-run/deadline 监测和幂等事件生产者 | 见所属任务输入 |
-| T036 | hosted_pending | Agent | 完成 GitLab 内容恢复副本首次完整同步与定时失败通知 | 见所属任务输入 |
+| T036 | in_progress | Agent | 完成 GitLab 内容恢复副本首次完整同步与定时失败通知 | 见所属任务输入 |
 | T042 | in_progress | Agent | 完成自定义域名诊断、绑定候选与正式化读回 | 见所属任务输入 |
 
 ## 就绪待开始
