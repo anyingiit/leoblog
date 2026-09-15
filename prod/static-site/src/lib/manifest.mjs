@@ -7,7 +7,7 @@ export function writeManifest(outputDir, routes) {
   const allowed = (relative) => {
     if (relative === "/manifest.json" || relative === "/raw-public.json" || relative.endsWith(".map")) return false;
     if (relative.startsWith("/private/") || relative.startsWith("/._private/")) return false;
-    return /\.html$|\.(?:js|css)$/i.test(relative);
+    return /\.html$|\.(?:js|css)$/i.test(relative) || ["/robots.txt", "/sitemap.xml"].includes(relative);
   };
   function walk(dir) {
     for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -34,5 +34,7 @@ export function contentTypeForAsset(assetPath) {
   if (/\.html$/i.test(assetPath)) return "text/html; charset=utf-8";
   if (/\.js$/i.test(assetPath)) return "text/javascript; charset=utf-8";
   if (/\.css$/i.test(assetPath)) return "text/css; charset=utf-8";
+  if (assetPath === "/sitemap.xml") return "application/xml; charset=utf-8";
+  if (assetPath === "/robots.txt") return "text/plain; charset=utf-8";
   return null;
 }

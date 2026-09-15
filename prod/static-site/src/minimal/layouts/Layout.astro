@@ -1,6 +1,9 @@
 ---
-const {title}=Astro.props;
+import {canonicalUrl} from '../discovery.mjs';
+const {title,canonicalPath=null,noindex=false}=Astro.props;
 const marker=import.meta.env.LEOBLOG_VERSION_MARKER;
 if (!/^[0-9a-f]{64}$/.test(marker??'')) throw new Error('A valid Leoblog version marker is required');
+if (canonicalPath!==null && !['/','/posts/hello-world'].includes(canonicalPath)) throw new Error('Invalid canonical path');
+if (typeof noindex!=='boolean' || (noindex && canonicalPath!==null)) throw new Error('Invalid discovery metadata');
 ---
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width"/><meta name="leoblog-version" content={marker}/><title>{title}</title><style is:inline>:root{font-family:system-ui,sans-serif;color:#1d2939;background:#f7f8fa}body{max-width:900px;margin:auto;padding:1rem 1.25rem;line-height:1.8}nav{border-bottom:1px solid #d0d5dd;padding:.5rem 0 1rem;margin-bottom:2rem}a{color:#175cd3}article{overflow-wrap:anywhere}time{color:#667085}</style></head><body><nav aria-label="主导航"><a href="/">Leoblog</a></nav><main><slot/></main></body></html>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width"/><meta name="leoblog-version" content={marker}/>{canonicalPath && <link rel="canonical" href={canonicalUrl(canonicalPath)}/>} {noindex && <meta name="robots" content="noindex, nofollow"/>}<title>{title}</title><style is:inline>:root{font-family:system-ui,sans-serif;color:#1d2939;background:#f7f8fa}body{max-width:900px;margin:auto;padding:1rem 1.25rem;line-height:1.8}nav{border-bottom:1px solid #d0d5dd;padding:.5rem 0 1rem;margin-bottom:2rem}a{color:#175cd3}article{overflow-wrap:anywhere}time{color:#667085}</style></head><body><nav aria-label="主导航"><a href="/">Leoblog</a></nav><main><slot/></main></body></html>

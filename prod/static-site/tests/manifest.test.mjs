@@ -10,6 +10,10 @@ test("manifest asset MIME policy covers accepted emitted extensions", () => {
   assert.equal(contentTypeForAsset("/_astro/app.js"), "text/javascript; charset=utf-8");
   assert.equal(contentTypeForAsset("/_astro/app.css"), "text/css; charset=utf-8");
   assert.equal(contentTypeForAsset("/index.html"), "text/html; charset=utf-8");
+  assert.equal(contentTypeForAsset("/sitemap.xml"), "application/xml; charset=utf-8");
+  assert.equal(contentTypeForAsset("/robots.txt"), "text/plain; charset=utf-8");
+  assert.equal(contentTypeForAsset("/other.xml"), null);
+  assert.equal(contentTypeForAsset("/notes.txt"), null);
   assert.equal(contentTypeForAsset("/private/secret.txt"), null);
 });
 
@@ -31,6 +35,9 @@ test("manifest excludes control files, sourcemaps, private files, and symlinked/
   fs.mkdirSync(`${dir}/_astro`, { recursive: true });
   fs.mkdirSync(`${dir}/private`, { recursive: true });
   fs.writeFileSync(`${dir}/index.html`, "home");
+  fs.writeFileSync(`${dir}/sitemap.xml`, "<urlset/>");
+  fs.writeFileSync(`${dir}/robots.txt`, "User-agent: *\n");
+  fs.writeFileSync(`${dir}/other.xml`, "private");
   fs.writeFileSync(`${dir}/_astro/app.js`, "console.log('actual emitted asset')");
   fs.writeFileSync(`${dir}/_astro/app.js.map`, "source map");
   fs.writeFileSync(`${dir}/raw-public.json`, "raw");
@@ -38,7 +45,7 @@ test("manifest excludes control files, sourcemaps, private files, and symlinked/
   fs.writeFileSync(`${outside}/outside.js`, "outside");
   fs.symlinkSync(`${outside}/outside.js`, `${dir}/_astro/outside.js`);
   const manifest = writeManifest(dir, ["/"]);
-  assert.deepEqual(manifest.files.map((file) => file.path), ["/_astro/app.js", "/index.html"]);
+  assert.deepEqual(manifest.files.map((file) => file.path), ["/_astro/app.js", "/index.html", "/robots.txt", "/sitemap.xml"]);
   fs.rmSync(dir, { recursive: true, force: true });
   fs.rmSync(outside, { recursive: true, force: true });
 });
