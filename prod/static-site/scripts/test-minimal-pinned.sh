@@ -60,6 +60,7 @@ files=(
   tests/fixtures/public-snapshot.json scripts/prepare-minimal-launch.mjs scripts/serve-minimal.mjs
   content/minimal-launch/hello-world.md src/minimal/layouts/Layout.astro
   src/minimal/pages/index.astro src/minimal/pages/404.astro 'src/minimal/pages/posts/[slug].astro'
+  src/minimal/discovery.mjs src/minimal/pages/sitemap.xml.js src/minimal/pages/robots.txt.js
   tests/minimal-launch.test.mjs tests/minimal-preview.test.mjs tests/security-toolchain.test.mjs
 )
 args=(--name "$owner" --label "leoblog.owner=$owner" --pull never --platform linux/amd64

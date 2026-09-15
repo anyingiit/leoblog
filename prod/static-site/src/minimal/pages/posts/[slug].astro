@@ -4,4 +4,4 @@ import {getSnapshot,markdownToHtml} from '../../../lib/content.mjs';
 export function getStaticPaths(){return getSnapshot().posts.map(post=>({params:{slug:post.slug},props:{post}}));}
 const {post}=Astro.props;
 ---
-<Layout title={`${post.title} · Leoblog`}><article><h1>{post.title}</h1><p>构建于 <time datetime={post.published_at}>{post.published_at}</time></p><div set:html={markdownToHtml(post.body.replace(/\n$/, ''))}/></article></Layout>
+<Layout title={`${post.title} · Leoblog`} canonicalPath={`/posts/${post.slug}`}><article><h1>{post.title}</h1><p>构建于 <time datetime={post.published_at}>{post.published_at}</time></p><div set:html={markdownToHtml(post.body.replace(/\n$/, ''))}/></article></Layout>
