@@ -24,6 +24,7 @@ try {
     "src/minimal/pages/404.astro", "src/minimal/pages/posts/[slug].astro",
     "tests/minimal-launch.test.mjs",
     "tests/minimal-preview.test.mjs",
+    "tests/security-toolchain.test.mjs",
   ];
   for (const relative of files) {
     const source = path.join(root, relative);

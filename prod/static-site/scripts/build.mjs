@@ -7,7 +7,7 @@ import { writeManifest } from "../src/lib/manifest.mjs";
 import { loadPublicationIdentity } from "../src/lib/identity.mjs";
 const packageRoot = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
 export function resolveAstroExecutable(root = packageRoot) {
-  const executable = path.join(root, "node_modules", "astro", "astro.js");
+  const executable = path.join(root, "node_modules", "astro", "bin", "astro.mjs");
   if (!fs.existsSync(executable)) throw new Error(`local Astro dependency is missing: ${executable}`);
   return executable;
 }

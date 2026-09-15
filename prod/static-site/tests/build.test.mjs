@@ -10,7 +10,7 @@ import { resolveAstroExecutable } from "../scripts/build.mjs";
 const root = path.resolve(new URL("..", import.meta.url).pathname);
 
 test("runner resolves the locked local Astro executable and rejects missing dependencies", () => {
-  assert.equal(resolveAstroExecutable(root), path.join(root, "node_modules/astro/astro.js"));
+  assert.equal(resolveAstroExecutable(root), path.join(root, "node_modules/astro/bin/astro.mjs"));
   assert.throws(() => resolveAstroExecutable(path.join(os.tmpdir(), "missing-static-site")), /local Astro dependency is missing/);
 });
 
