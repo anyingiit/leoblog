@@ -1,0 +1,8 @@
+---
+const { postSlug, turnstileSiteKey = "" } = Astro.props;
+---
+<section class="card" id="comments" data-post-slug={postSlug} data-turnstile-key={turnstileSiteKey}><h2>Comments</h2><div id="comment-list"><p class="muted">Loading approved comments…</p></div><form id="comment-form"><label>Name <input id="comment-author" required maxlength="80" /></label><br /><label>Comment <textarea id="comment-body" required maxlength="4000"></textarea></label><div id="comment-turnstile"></div><button id="comment-submit" type="submit">Submit for review</button><p id="comment-status" role="status"></p></form><div id="withdrawal" hidden><p>Save this withdrawal token now. It will not be shown again:</p><code id="withdrawal-token"></code><form id="withdraw-form"><input id="withdraw-input" required autocomplete="off" /><button type="submit">Withdraw comment</button></form><p id="withdraw-status" role="status"></p></div></section>
+<script>
+  const loadComments = () => import("../scripts/comments.js");
+  loadComments();
+</script>

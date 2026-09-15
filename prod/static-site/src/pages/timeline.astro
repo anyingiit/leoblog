@@ -1,0 +1,4 @@
+---
+import Layout from "../layouts/Layout.astro"; import { getSnapshot } from "../lib/content.mjs"; const { timeline } = getSnapshot();
+---
+<Layout title="Timeline"><h1>Timeline</h1>{timeline.events.map((event) => <article class="card"><strong>{event.title}</strong><p>{event.desc}</p><span class="muted">{event.status}</span></article>)}</Layout>

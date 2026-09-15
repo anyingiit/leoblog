@@ -1,0 +1,4 @@
+---
+import Layout from "../../layouts/Layout.astro"; import { getSnapshot } from "../../lib/content.mjs"; const items = getSnapshot().approved.filter((item) => item.kind === "session");
+---
+<Layout title="Sessions"><h1>Reviewed Sessions</h1>{items.map((item) => <article class="card"><h2><a href={`/sessions/${item.id}`}>{item.data.title || item.id}</a></h2><p>{item.data.summary}</p></article>)}</Layout>

@@ -1,0 +1,4 @@
+---
+import Layout from "../../layouts/Layout.astro"; import { getSnapshot } from "../../lib/content.mjs"; const items = getSnapshot().approved.filter((item) => item.kind === "archive");
+---
+<Layout title="Archive"><h1>Reviewed Archive</h1>{items.map((item) => <article class="card"><h2><a href={`/archive/${item.id}`}>{item.data.title || item.id}</a></h2><p>{item.data.summary}</p></article>)}</Layout>

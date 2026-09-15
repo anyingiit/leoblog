@@ -1,0 +1,4 @@
+---
+import Layout from "../../layouts/Layout.astro"; import { getSnapshot, markdownToHtml } from "../../lib/content.mjs"; const site = getSnapshot(); export function getStaticPaths() { return getSnapshot().approved.filter((item) => item.kind === "archive").map((item) => ({ params: { slug: String(item.id) }, props: { item } })); } const { item } = Astro.props; const data = item.data;
+---
+<Layout title={data.title || item.id}><h1>{data.title || item.id}</h1>{data.body ? <div set:html={markdownToHtml(data.body)} /> : <p>{data.summary}</p>}</Layout>
