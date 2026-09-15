@@ -1,0 +1,9 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import CommentIsland from "../../components/CommentIsland.astro";
+import { getSnapshot, markdownToHtml } from "../../lib/content.mjs";
+const site = getSnapshot();
+export function getStaticPaths() { return getSnapshot().posts.map((post) => ({ params: { slug: post.slug }, props: { post } })); }
+const { post } = Astro.props;
+---
+<Layout title={post.title}><p><a href="/">← Home</a></p><h1>{post.title}</h1><p class="muted">{post.published_at}</p><div set:html={markdownToHtml(post.body)} /><CommentIsland postSlug={post.slug} turnstileSiteKey={import.meta.env.PUBLIC_TURNSTILE_SITE_KEY} /></Layout>
