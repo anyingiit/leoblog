@@ -8,6 +8,7 @@ import {parse} from 'parse5';
 import {prepare,validateMinimal,BODY,INTRO,hash,canonical} from '../scripts/prepare-minimal-launch.mjs';
 import {markdownToHtml} from '../src/lib/content.mjs';
 const root=path.resolve(new URL('..',import.meta.url).pathname);
+const ORIGIN='https://douseful.eu.org';
 const source={git_sha:'b'.repeat(40),dirty_sha256:'c'.repeat(64)}; // tests only
 function workspace(t) {const p=fs.mkdtempSync(path.join(os.tmpdir(),'minimal-'));t.after(()=>fs.rmSync(p,{recursive:true,force:true}));return p;}
 function command(bin,args,env={},diagnostic) {
@@ -41,7 +42,7 @@ test('minimal two-build inventory, actual rendered text and destinations; failed
   t.diagnostic(`two minimal artifact builds SHA-256: ${hash(first)}`);
   assert.deepEqual(entries.filter(p=>p.endsWith('.html')).sort(),['404.html','index.html','posts/hello-world/index.html']);
   assert.equal(entries.some(p=>p.endsWith('.js')||p.endsWith('.map')),false);
-  assert.equal(entries.some(p=>!['404.html','index.html','posts/hello-world/index.html','manifest.json'].includes(p)),false);
+  assert.equal(entries.some(p=>!['404.html','index.html','posts/hello-world/index.html','robots.txt','sitemap.xml','manifest.json'].includes(p)),false);
   const marker=validateMinimal(input).marker;
   const documents={};
   for (const entry of entries.filter(p=>p.endsWith('.html'))) {
@@ -53,8 +54,8 @@ test('minimal two-build inventory, actual rendered text and destinations; failed
         for (const {name,value} of node.attrs||[]) {
           assert.equal(name.startsWith('on'),false);assert.notEqual(name,'srcdoc');
           if (['href','src','action','poster','data','srcset'].includes(name)) {
-            assert.equal(name,'href');assert.ok(['/','/posts/hello-world'].includes(value));
-            const u=new URL(value,'https://approved.example');assert.equal(u.origin,'https://approved.example');
+            assert.equal(name,'href');assert.ok(['/','/posts/hello-world',`${ORIGIN}/`,`${ORIGIN}/posts/hello-world`].includes(value));
+            const u=new URL(value,'https://approved.example');assert.ok(['https://approved.example',ORIGIN].includes(u.origin));
           }
         }
         if (node.tagName==='style') {
@@ -72,9 +73,22 @@ test('minimal two-build inventory, actual rendered text and destinations; failed
   for (const part of BODY.trimEnd().split('\n\n')) {
     const rendered=markdownToHtml(part);assert.ok(article.includes(rendered),rendered);
   }
+  assert.equal((documents['index.html'].match(/rel="canonical"/g)||[]).length,1);
+  assert.ok(documents['index.html'].includes(`href="${ORIGIN}/"`));
+  assert.equal((article.match(/rel="canonical"/g)||[]).length,1);
+  assert.ok(article.includes(`href="${ORIGIN}/posts/hello-world"`));
+  assert.doesNotMatch(documents['index.html'],/noindex/i);assert.doesNotMatch(article,/noindex/i);
+  assert.match(documents['404.html'],/<meta name="robots" content="noindex, nofollow"/);
+  assert.doesNotMatch(documents['404.html'],/rel="canonical"/);
+  const sitemap=command('tar',['-xOzf',artifact,'sitemap.xml']);
+  assert.equal(sitemap,`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>${ORIGIN}/</loc></url><url><loc>${ORIGIN}/posts/hello-world</loc></url></urlset>\n`);
+  const robots=command('tar',['-xOzf',artifact,'robots.txt']);
+  assert.equal(robots,`User-agent: *\nAllow: /\nSitemap: ${ORIGIN}/sitemap.xml\n`);
   const publicManifest=JSON.parse(command('tar',['-xOzf',artifact,'manifest.json']));
   assert.deepEqual(publicManifest.routes,['/','/posts/hello-world']);
-  for (const f of publicManifest.files) assert.equal(f.sha256,hash(documents[f.path.slice(1)]));
+  assert.deepEqual(publicManifest.files.map(file=>file.path),['/404.html','/index.html','/posts/hello-world/index.html','/robots.txt','/sitemap.xml']);
+  const publicBytes={...documents,'robots.txt':robots,'sitemap.xml':sitemap};
+  for (const f of publicManifest.files) assert.equal(f.sha256,hash(publicBytes[f.path.slice(1)]));
   fs.writeFileSync(path.join(input,'publication-identity.json'),'{}');
   const bad=spawnSync(process.execPath,args,{cwd:root,env:{...process.env,LEOBLOG_PROFILE:'minimal'}});
   assert.notEqual(bad.status,0);assert.deepEqual(fs.readFileSync(artifact),first);

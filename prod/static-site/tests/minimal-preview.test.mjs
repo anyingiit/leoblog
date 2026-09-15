@@ -15,7 +15,9 @@ test('real preview GET HEAD useful 404 method and malformed-target isolation',as
   const home='<h1>Leoblog</h1><a href="/posts/hello-world">博客上线了</a>';
   const article='<h1>博客上线了</h1>'+escaped;
   const missing='<h1>页面未找到</h1><a href="/">返回首页</a>';
-  for (const [name,body] of [['index.html',home],['posts/hello-world/index.html',article],['404.html',missing]])
+  const sitemap='<?xml version="1.0"?><urlset/>';
+  const robots='User-agent: *\n';
+  for (const [name,body] of [['index.html',home],['posts/hello-world/index.html',article],['404.html',missing],['sitemap.xml',sitemap],['robots.txt',robots]])
     fs.writeFileSync(path.join(root,name),body);
   const server=createPreview(root);server.listen(0,'127.0.0.1');await once(server,'listening');
   t.after(()=>new Promise((resolve,reject)=>server.close(e=>e?reject(e):resolve())));
@@ -36,6 +38,10 @@ test('real preview GET HEAD useful 404 method and malformed-target isolation',as
     assert.equal(Number(get.headers['content-length']),Buffer.byteLength(body));
     const head=await request(target,'HEAD');assert.equal(head.status,status);assert.equal(head.body,'');
     assert.equal(head.headers['content-length'],get.headers['content-length']);
+  }
+  for (const [target,body,type] of [['/sitemap.xml',sitemap,'application/xml; charset=utf-8'],['/robots.txt',robots,'text/plain; charset=utf-8']]) {
+    const get=await request(target);assert.equal(get.status,200);assert.equal(get.body,body);assert.equal(get.headers['content-type'],type);
+    const head=await request(target,'HEAD');assert.equal(head.status,200);assert.equal(head.body,'');assert.equal(head.headers['content-type'],type);
   }
   for (const method of ['POST','PUT','DELETE']) assert.equal((await request('/',method)).status,405);
   for (const target of ['/%ZZ','//evil.example/','http://evil.example/'])
