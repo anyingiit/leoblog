@@ -1,20 +1,18 @@
 # Leoblog 当前进度
 
-[Linear 项目：需求、优先级和进度](https://linear.app/workspacebyleo/project/leoblog-5053e197f739) · [正式主站](https://douseful.eu.org/)
+项目看板：[Linear — leoblog](https://linear.app/workspacebyleo/project/leoblog-5053e197f739)
 
-当前执行已恢复；普通实现和审查使用 DeepSeek V4.1 flash max，遇到429改用Luna max。
+中央状态快照：2026-09-15T15:37:33.420984+00:00。记录中的时间不代表持续实时探测。
 
-中央状态快照：2026-09-15T14:46:19.307428+00:00。记录中的时间不代表持续实时探测。
-
-任务共 **64** 项：已完成 **46**，未完成 **18**。任务完成与线上发布分别计数。
+任务共 **65** 项：已完成 **48**，未完成 **17**。任务完成与线上发布分别计数。
 
 | 状态 | 数量 |
 | --- | --- |
-| 已完成 | 46 |
+| 已完成 | 48 |
 | hosted_pending | 1 |
-| in_progress | 2 |
+| in_progress | 7 |
 | 部分证据 | 1 |
-| 待开始 | 14 |
+| 待开始 | 8 |
 
 ## 版本、PR 与公开入口
 
@@ -59,17 +57,17 @@
 | --- | --- | --- | --- | --- |
 | T021 | 部分证据 | Agent | 补充 Oracle、网盘、监测、scheduler 和路由只读资源清单 | 见所属任务输入 |
 | T024 | in_progress | Agent | 实现非测试身份连接与 live 证明验证，保留默认 OFF | 见所属任务输入 |
+| T030 | in_progress | Agent | 实现选定标准工具的流式加密封装及密钥句柄边界 | 见所属任务输入 |
+| T031 | in_progress | Agent | 实现 Google Drive 单目标上传和严格对象版本读回 | 见所属任务输入 |
+| T032 | in_progress | Agent | 实现 OneDrive 单目标上传和严格对象版本读回 | 见所属任务输入 |
+| T033 | in_progress | Agent | 实现持久 daily 调度、截止点与恢复后不重复执行 | 见所属任务输入 |
+| T034 | in_progress | Agent | 实现独立 missed-run/deadline 监测和幂等事件生产者 | 见所属任务输入 |
 | T036 | hosted_pending | Agent | 完成 GitLab 内容恢复副本首次完整同步与定时失败通知 | 见所属任务输入 |
-| T064 | in_progress | Agent | 启用 Linear 并建立稳定任务映射、依赖与真实读回校验 | 见所属任务输入 |
+| T042 | in_progress | Agent | 完成自定义域名诊断、绑定候选与正式化读回 | 见所属任务输入 |
 
 ## 就绪待开始
 
-- T030：实现选定标准工具的流式加密封装及密钥句柄边界
-- T031：实现 Google Drive 单目标上传和严格对象版本读回
-- T032：实现 OneDrive 单目标上传和严格对象版本读回
-- T033：实现持久 daily 调度、截止点与恢复后不重复执行
-- T034：实现独立 missed-run/deadline 监测和幂等事件生产者
-- T042：完成自定义域名诊断、绑定候选与正式化读回
+- 当前无就绪项。
 
 ## 局部输入与后继
 
