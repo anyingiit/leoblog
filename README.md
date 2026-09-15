@@ -3,6 +3,9 @@
 A static blog delivered through small, reviewed releases. This private repository
 holds the reviewed Astro source and the GitHub release workflow.
 
+- [当前进度、版本预览与下一动作](docs/progress.md)
+- [Latest released preview](https://18c0fefd.leoblog-prod.pages.dev/)
+- [Release v2026.09.15-1](https://github.com/anyingiit/leoblog/releases/tag/v2026.09.15-1)
 - [Source](prod/static-site/)
 - [Small releases and review](docs/operations/github-pr-workflow.md)
 - [Pull requests and current release records](https://github.com/anyingiit/leoblog/pulls)
