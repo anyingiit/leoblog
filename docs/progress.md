@@ -1,15 +1,17 @@
 # Leoblog 当前进度
 
-项目看板：[Linear — leoblog](https://linear.app/workspacebyleo/project/leoblog-5053e197f739)
+> **已暂停（2026-09-16）**：按用户要求控制 Token 成本，运行中的工作 Agent 为 0。当前成果已保存；等待用户明确恢复后再继续实现、验证或发布。
 
-中央状态快照：2026-09-15T16:00:51.098317+00:00。记录中的时间不代表持续实时探测。
+[Linear 项目进度](https://linear.app/workspacebyleo/project/leoblog-5053e197f739) · [当前预览](https://6f0d77f7.leoblog-prod.pages.dev/) · [正式站点](https://douseful.eu.org/)
+
+中央状态快照：2026-09-15T16:33:47.989138+00:00。记录中的时间不代表持续实时探测。
 
 任务共 **65** 项：已完成 **48**，未完成 **17**。任务完成与线上发布分别计数。
 
 | 状态 | 数量 |
 | --- | --- |
 | 已完成 | 48 |
-| in_progress | 8 |
+| 已暂停的未完成任务 | 8 |
 | 部分证据 | 1 |
 | 待开始 | 8 |
 
@@ -29,7 +31,7 @@
 - 产物 SHA-256：`8513dfcd856ef1bfca8342ee29901cdae541965475557965f838d457901f3b21`
 - [已发布版本链接](https://18c0fefd.leoblog-prod.pages.dev/)
 - deployment：`18c0fefd-3e86-4b74-9aad-9fee1e7da528`
-- 后续动作：继续下一项独立可预览增量。
+- 后续动作：等待用户明确恢复；当前暂停。
 
 - 局限：Minimal static trial: dynamic comments, backup recovery and custom-domain work remain separate.
 - 局限：Historical local tests reused only for identical reviewed bytes.
@@ -43,26 +45,26 @@
 - 产物 SHA-256：`6c0c85b489c316efa82292d9c4d03471d557a3749ff5c67be308f74a0f21f07a`
 - [已发布版本链接](https://6f0d77f7.leoblog-prod.pages.dev/)
 - deployment：`6f0d77f7-7301-423b-8f1b-6d0aeb2d4eae`
-- 后续动作：继续下一项独立可预览增量。
+- 后续动作：等待用户明确恢复；当前暂停。
 
 - 局限：Minimal static trial; dynamic comments and dual-target backup remain separate.
 - 局限：T044 independent source/build evidence reused after exact byte comparison. T063 new independent review agents hit429; coordinator performed scoped review and verification.
 
 以上投影消费协调者接受的回执；本页不调用 provider、不部署，也不把本地检查当成线上发布。
 
-## 进行中与审查
+## 暂停中的未完成工作
 
 | 任务 | 状态 | 负责方 | 下一动作 | 情况/原因 |
 | --- | --- | --- | --- | --- |
 | T021 | 部分证据 | Agent | 补充 Oracle、网盘、监测、scheduler 和路由只读资源清单 | 见所属任务输入 |
-| T024 | in_progress | Agent | 实现非测试身份连接与 live 证明验证，保留默认 OFF | 见所属任务输入 |
-| T030 | in_progress | Agent | 实现选定标准工具的流式加密封装及密钥句柄边界 | 见所属任务输入 |
-| T031 | in_progress | Agent | 实现 Google Drive 单目标上传和严格对象版本读回 | 见所属任务输入 |
-| T032 | in_progress | Agent | 实现 OneDrive 单目标上传和严格对象版本读回 | 见所属任务输入 |
-| T033 | in_progress | Agent | 实现持久 daily 调度、截止点与恢复后不重复执行 | 见所属任务输入 |
-| T034 | in_progress | Agent | 实现独立 missed-run/deadline 监测和幂等事件生产者 | 见所属任务输入 |
-| T036 | in_progress | Agent | 完成 GitLab 内容恢复副本首次完整同步与定时失败通知 | 见所属任务输入 |
-| T042 | in_progress | Agent | 完成自定义域名诊断、绑定候选与正式化读回 | 见所属任务输入 |
+| T024 | 已暂停 | 无运行 Agent | 实现非测试身份连接与 live 证明验证，保留默认 OFF | 见所属任务输入 |
+| T030 | 已暂停 | 无运行 Agent | 实现选定标准工具的流式加密封装及密钥句柄边界 | 见所属任务输入 |
+| T031 | 已暂停 | 无运行 Agent | 实现 Google Drive 单目标上传和严格对象版本读回 | 见所属任务输入 |
+| T032 | 已暂停 | 无运行 Agent | 实现 OneDrive 单目标上传和严格对象版本读回 | 见所属任务输入 |
+| T033 | 已暂停 | 无运行 Agent | 实现持久 daily 调度、截止点与恢复后不重复执行 | 见所属任务输入 |
+| T034 | 已暂停 | 无运行 Agent | 实现独立 missed-run/deadline 监测和幂等事件生产者 | 见所属任务输入 |
+| T036 | 已暂停 | 无运行 Agent | 完成 GitLab 内容恢复副本首次完整同步与定时失败通知 | 见所属任务输入 |
+| T042 | 已暂停 | 无运行 Agent | 完成自定义域名诊断、绑定候选与正式化读回 | 见所属任务输入 |
 
 ## 就绪待开始
 
@@ -78,3 +80,9 @@
 | authority-live-capabilities | T022 | T037 |
 
 动态 Gate2、备份恢复、域名等验收继续单列。新事件或中央接受状态变化后更新本页。
+
+## 暂停交接
+
+T024/T031/T033/T034/T036 的部分实现及 T030/T032 的研究记录已保存在各自分支。T042 初版已集成，凭据与 DNS 校验修正尚无补丁。以上 8 项均未验收；代码交接不释放后继依赖。T029 合同增补的审查发现已记录，恢复 adapter 工作前先处理。
+
+Vercel 和 Neon 连接暂不可用；已设置北京时间 2026-09-16 09:00 一次性连接提醒，提醒不会恢复项目执行。
