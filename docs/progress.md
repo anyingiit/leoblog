@@ -1,10 +1,6 @@
 # Leoblog 当前进度
 
-> **执行中（2026-09-16）**：当前验收进度为 50/65。T026 的 21/21 第二次修复已集成并进入第三次只读审查；T033、T034、T036 也在互斥范围内进行 immutable-source 审查；T030、T032 分别执行限定 crypto 与 OneDrive 修复；T031 的本地代码门禁已通过，真实无人值守 Provider 门仍独立。唯一 heavy 槽当前已释放，等待具备凭据与平台条件的门禁。Vercel 权限刷新后已读回 1 个 Hobby 团队、7 个项目、`leoblog-route-b` 和 5 个 READY 生产部署。
-
-[Linear 项目进度](https://linear.app/workspacebyleo/project/leoblog-5053e197f739) · [当前预览](https://6f0d77f7.leoblog-prod.pages.dev/) · [正式站点](https://douseful.eu.org/)
-
-中央状态快照：2026-09-16T01:11:31.525074+00:00。记录中的时间不代表持续实时探测。
+中央状态快照：2026-09-16T01:39:45.690728+00:00。记录中的时间不代表持续实时探测。
 
 任务共 **65** 项：已完成 **50**，未完成 **15**。任务完成与线上发布分别计数。
 
@@ -18,6 +14,8 @@
 ## 版本、PR 与公开入口
 
 [PR #3](https://github.com/anyingiit/leoblog/pull/3)
+
+[Linear 项目进度](https://linear.app/workspacebyleo/project/leoblog-5053e197f739)
 
 受审源码 SHA：`172a894aea309897e07f46577a71479247eb1be2`；GitHub 导入 head：`13cd53b2050b8ad1a8a38bca418642e23054758e`。
 
@@ -37,6 +35,12 @@
 - 局限：T044 independent source/build evidence reused after exact byte comparison. T063 new independent review agents hit429; coordinator performed scoped review and verification.
 
 以上投影消费协调者接受的回执；本页不调用 provider、不部署，也不把本地检查当成线上发布。
+
+### 最新执行节点
+
+- Vercel 授权已恢复：可见 1 个 Hobby 团队、7 个项目、`leoblog-route-b` 与 5 个 READY 生产部署。
+- T036 已在 GitLab 安装并逐字读回审查代码与最小权限保护；发现 protection probe 与 recovery job 未互斥后，在创建流水线前停止。没有创建调度、通知或 recovery ref。
+- T026、T030、T032、T033、T034、T036 正按互斥文件范围并行修复；完成数保持 50/65，部分代码交接不计为验收。
 
 ## 进行中与审查
 
