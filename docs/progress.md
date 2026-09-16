@@ -1,6 +1,6 @@
 # Leoblog 当前进度
 
-中央状态快照：2026-09-16T02:15:39.392939+00:00。记录中的时间不代表持续实时探测。
+中央状态快照：2026-09-16T03:19:56.230985+00:00。记录中的时间不代表持续实时探测。
 
 任务共 **65** 项：已完成 **50**，未完成 **15**。任务完成与线上发布分别计数。
 
@@ -13,9 +13,7 @@
 
 ## 版本、PR 与公开入口
 
-[PR #3](https://github.com/anyingiit/leoblog/pull/3)
-
-[Linear 项目进度](https://linear.app/workspacebyleo/project/leoblog-5053e197f739)
+[PR #3](https://github.com/anyingiit/leoblog/pull/3) · [Linear 项目](https://linear.app/workspacebyleo/project/leoblog-5053e197f739)
 
 受审源码 SHA：`172a894aea309897e07f46577a71479247eb1be2`；GitHub 导入 head：`13cd53b2050b8ad1a8a38bca418642e23054758e`。
 
@@ -36,25 +34,18 @@
 
 以上投影消费协调者接受的回执；本页不调用 provider、不部署，也不把本地检查当成线上发布。
 
-### 最新执行节点
-
-- Vercel 授权已恢复：可见 1 个 Hobby 团队、7 个项目、`leoblog-route-b` 与 5 个 READY 生产部署。
-- T026、T030、T032、T034 的最新修复均通过主协调器复跑，正在互斥范围内做 fresh immutable-source 审查；T033 修复继续独立运行。
-- T036 第七次本地审查已通过 38,416 个 CI 规则组合、73 项同步测试与 38 项证据测试；新 YAML 通过 GitLab CI lint，等待唯一 heavy 槽后安装并触发隔离 protection probe。
-- 完成数保持 50/65；代码交接、本地复跑和部分 provider 证据均不提前计为验收。
-
 ## 进行中与审查
 
 | 任务 | 状态 | 负责方 | 下一动作 | 情况/原因 |
 | --- | --- | --- | --- | --- |
-| T021 | blocked_provider_readback | Agent | 补充 Oracle、网盘、监测、scheduler 和路由只读资源清单 | 见所属任务输入 |
-| T026 | in_progress | Agent | 实现独立删除 tail/witness 适配与故障读回 | 见所属任务输入 |
-| T030 | in_progress | Agent | 实现选定标准工具的流式加密封装及密钥句柄边界 | 见所属任务输入 |
-| T031 | in_progress | Agent | 实现 Google Drive 单目标上传和严格对象版本读回 | 见所属任务输入 |
-| T032 | in_progress | Agent | 实现 OneDrive 单目标上传和严格对象版本读回 | 见所属任务输入 |
-| T033 | in_progress | Agent | 实现持久 daily 调度、截止点与恢复后不重复执行 | 见所属任务输入 |
-| T034 | in_progress | Agent | 实现独立 missed-run/deadline 监测和幂等事件生产者 | 见所属任务输入 |
-| T036 | in_progress | Agent | 完成 GitLab 内容恢复副本首次完整同步与定时失败通知 | 见所属任务输入 |
+| T021 | blocked_provider_readback | 主协调者 | Vercel 权限已恢复并读回 7 个项目；继续补齐其余 provider 精确资源/额度门 | Vercel 目标项目与 5 个 READY 生产部署可见，未执行部署 |
+| T026 | in_progress | Luna/max 审查 | 第五次 immutable-source 审查后再进入 pinned runtime 与 hosted GitLab 门 | root 复跑 29/29 与 T023 全通过；占用唯一 heavy 槽 |
+| T030 | in_progress | Luna/max 修复 | 闭合 trust、ciphertext handoff、cleanup 与 aggregate deadline 五项边界 | Linux acquisition/cgroup/interoperability 与真实 custody 仍是独立 heavy 门 |
+| T031 | in_progress | Agent | 建立无人值守 OAuth，完成真实 Drive 上传、严格读回与隔离恢复 | provider-free 绑定代码已通过；连接器授权不等于 worker OAuth |
+| T032 | in_progress | Luna/max 修复 | 闭合 provider identity seal、persistence containment 与 hostile comparison | Graph/OAuth/provider/heavy 保持关闭 |
+| T033 | in_progress | Luna/max 修复 | 闭合 kernel containment、完整 lineage 与 snapshot pointer 五项边界 | provider、cron、delivery、restore、live/heavy 保持关闭 |
+| T034 | in_progress | Luna/max 修复 | 闭合 channel、tombstone、health、CAS 与 outbox 九项边界 | Cloudflare、Better Stack、邮件和故障演练保持关闭 |
+| T036 | in_progress | 主协调者 | T026 释放 heavy 槽后执行单一 probe-only GitLab pipeline | 本地审查通过；尚未触发流水线或 recovery job |
 
 ## 就绪待开始
 
