@@ -1,8 +1,10 @@
 # Leoblog 当前进度
 
-中央状态快照：2026-09-16T03:19:56.230985+00:00。记录中的时间不代表持续实时探测。
+中央状态快照：2026-09-16T03:54:06.505535Z。记录中的时间不代表持续实时探测。
 
 任务共 **65** 项：已完成 **50**，未完成 **15**。任务完成与线上发布分别计数。
+
+执行已按用户要求暂停：当前无运行中 Agent、账本 attempt、heavy owner 或外部写者。恢复需要 Codex 重启后用户明确下达指令与模型规则。
 
 | 状态 | 数量 |
 | --- | --- |
@@ -38,14 +40,14 @@
 
 | 任务 | 状态 | 负责方 | 下一动作 | 情况/原因 |
 | --- | --- | --- | --- | --- |
-| T021 | blocked_provider_readback | 主协调者 | Vercel 权限已恢复并读回 7 个项目；继续补齐其余 provider 精确资源/额度门 | Vercel 目标项目与 5 个 READY 生产部署可见，未执行部署 |
-| T026 | in_progress | Luna/max 审查 | 第五次 immutable-source 审查后再进入 pinned runtime 与 hosted GitLab 门 | root 复跑 29/29 与 T023 全通过；占用唯一 heavy 槽 |
-| T030 | in_progress | Luna/max 修复 | 闭合 trust、ciphertext handoff、cleanup 与 aggregate deadline 五项边界 | Linux acquisition/cgroup/interoperability 与真实 custody 仍是独立 heavy 门 |
-| T031 | in_progress | Agent | 建立无人值守 OAuth，完成真实 Drive 上传、严格读回与隔离恢复 | provider-free 绑定代码已通过；连接器授权不等于 worker OAuth |
-| T032 | in_progress | Luna/max 修复 | 闭合 provider identity seal、persistence containment 与 hostile comparison | Graph/OAuth/provider/heavy 保持关闭 |
-| T033 | in_progress | Luna/max 修复 | 闭合 kernel containment、完整 lineage 与 snapshot pointer 五项边界 | provider、cron、delivery、restore、live/heavy 保持关闭 |
-| T034 | in_progress | Luna/max 修复 | 闭合 channel、tombstone、health、CAS 与 outbox 九项边界 | Cloudflare、Better Stack、邮件和故障演练保持关闭 |
-| T036 | in_progress | 主协调者 | T026 释放 heavy 槽后执行单一 probe-only GitLab pipeline | 本地审查通过；尚未触发流水线或 recovery job |
+| T021 | blocked_provider_readback | 已暂停 | 补齐 Oracle、网盘运行凭据、受限角色及精确额度门 | Vercel 权限已恢复并读回 7 个项目；未部署 |
+| T026 | in_progress | 已暂停 | 固定 Node/npm，再执行 hosted GitLab writer/ref/CAS/history/provider 门 | 第五次本地独立审查通过；29/29 与 T023 通过 |
+| T030 | in_progress | WIP 已保存 | 审查 WIP `6120029e…` 并运行 canonical light suite | 未整合；canonical suite 尚未运行 |
+| T031 | in_progress | 已暂停 | 建立无人值守 OAuth，完成真实 Drive 上传、严格读回与隔离恢复 | provider-free 代码门已通过；连接器授权不等于 worker OAuth |
+| T032 | in_progress | 已暂停 | fresh immutable-source review 后进入 Graph/OAuth/live 门 | 第七次修复已整合；86/86 与 T029 通过 |
+| T033 | in_progress | 已暂停 | fresh immutable-source review 后进入 hosted Linux/live 门 | 第五次修复已整合；98 pass、1 平台 skip、0 fail |
+| T034 | in_progress | WIP 已保存 | 修复 health chronology 的 503/200 失败并重跑 canonical suite | 未整合；Python 81/81，Worker 55/56 |
+| T036 | in_progress | 已暂停 | 经受保护 MR 安装精确 YAML，再运行单一 probe-only pipeline | hosted probe 未启动；无流水线、调度或通知写入 |
 
 ## 就绪待开始
 
