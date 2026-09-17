@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "articles": [
+    {
+      "slug": "hello-world",
+      "title": "博客上线了",
+      "body_sha256": "3d5d83c9eec8bfd2a7f2911b9dde7b036696e714c79348825860e17c34b77b42",
+      "approval": "docs/decisions/2026-09-14-minimal-static-launch-approval.md#approved-public-text-verbatim"
+    },
+    {
+      "slug": "blog-project-progress",
+      "title": "博客项目取得重大进展",
+      "body_sha256": "28aba824da3960f8ccffb61432379dfec7d95218261cbad86aab3fd6d8142678",
+      "approval": "docs/decisions/2026-09-17-blog-project-progress-approval.md#approved-public-text-verbatim"
+    }
+  ]
+}

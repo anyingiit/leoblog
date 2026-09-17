@@ -1,4 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import {getSnapshot} from '../../lib/content.mjs';
+const posts=[...getSnapshot().posts].reverse();
 ---
-<Layout title="Leoblog" canonicalPath="/"><h1>Leoblog</h1><p>记录学习、实践与思考。先写下来，再慢慢完善。</p><article><h2><a href="/posts/hello-world">博客上线了</a></h2></article></Layout>
+<Layout title="Leoblog" canonicalPath="/"><h1>Leoblog</h1><p>记录学习、实践与思考。先写下来，再慢慢完善。</p>{posts.map(post => <article><h2><a href={`/posts/${post.slug}`}>{post.title}</a></h2></article>)}</Layout>

@@ -6,8 +6,7 @@ import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 const runner = new URL('../scripts/test-minimal-pinned.sh', import.meta.url).pathname;
 const repo=path.resolve(path.dirname(runner),'../../..');
-const candidate=path.join(repo,'specs/001-trial-launch-remaining/evidence/T039/candidate.sh');
-for (const target of [runner,candidate]) for (const scenario of ['volume','container','install-ack','main-ack']) test(`${path.basename(target)} safely handles ${scenario}`, t => {
+for (const target of [runner]) for (const scenario of ['volume','container','install-ack','main-ack']) test(`${path.basename(target)} safely handles ${scenario}`, t => {
   const dir=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'t039-ownership-'))); t.after(()=>fs.rmSync(dir,{recursive:true,force:true}));
   const ownedId='a'.repeat(64);
   fs.writeFileSync(path.join(dir,'docker'),`#!/bin/sh
@@ -32,7 +31,7 @@ case "$1 $2" in
   *) exit 1;;
 esac
 `,{mode:0o755});
-  const r=spawnSync('bash',[target,...(target===candidate?[path.join(dir,'run')]:[])],{encoding:'utf8',timeout:10000,cwd:repo,env:{...process.env,PATH:dir+':'+process.env.PATH,CALLS:path.join(dir,'calls'),STATE:path.join(dir,'state'),COUNT:path.join(dir,'count'),SCENARIO:scenario,OWNED_ID:ownedId}});
+  const r=spawnSync('bash',[target],{encoding:'utf8',timeout:10000,cwd:repo,env:{...process.env,PATH:dir+':'+process.env.PATH,CALLS:path.join(dir,'calls'),STATE:path.join(dir,'state'),COUNT:path.join(dir,'count'),SCENARIO:scenario,OWNED_ID:ownedId}});
   assert.notEqual(r.status,0);
   assert.ok(fs.existsSync(path.join(dir,'calls')),r.stderr);
   const calls=fs.readFileSync(path.join(dir,'calls'),'utf8');

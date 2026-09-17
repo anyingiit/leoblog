@@ -47,19 +47,33 @@ wait_container(){
 
 # The candidate binds committed public source plus the three publisher integration files.
 git -C "$repo" diff HEAD --quiet -- prod/static-site prod/ops/static-launch/Preflight.php \
-  prod/laravel/app/Services/Pages/PagesPreparedAssetUploader.php prod/laravel/tests/StaticLaunch/PreflightTest.php
-[[ -z "$(git -C "$repo" ls-files --others --exclude-standard -- prod/static-site prod/ops/static-launch/Preflight.php prod/laravel/app/Services/Pages/PagesPreparedAssetUploader.php prod/laravel/tests/StaticLaunch/PreflightTest.php)" ]]
+  prod/laravel/app/Services/Pages/PagesPreparedAssetUploader.php prod/laravel/tests/StaticLaunch/PreflightTest.php docs/decisions
+[[ -z "$(git -C "$repo" ls-files --others --exclude-standard -- prod/static-site prod/ops/static-launch/Preflight.php prod/laravel/app/Services/Pages/PagesPreparedAssetUploader.php prod/laravel/tests/StaticLaunch/PreflightTest.php docs/decisions)" ]]
 git -C "$repo" archive HEAD prod/static-site | tar -x -C "$run/source" --strip-components=2
+mkdir -m 700 "$run/approvals" "$run/previous"
+git -C "$repo" archive HEAD docs/decisions | tar -x -C "$run/approvals"
+previous_args=()
+n=0
+for tag in $(git -C "$repo" tag --list 'source/v*'); do
+  if git -C "$repo" cat-file -e "$tag:prod/static-site/content/minimal-launch/articles.json" 2>/dev/null; then
+    n=$((n + 1))
+    git -C "$repo" show "$tag:prod/static-site/content/minimal-launch/articles.json" > "$run/previous/$n.json"
+    previous_args+=(--previous "$run/previous/$n.json")
+  fi
+done
+node "$run/source/scripts/approvals.mjs" check --site "$run/source" --root "$run/approvals" ${previous_args[@]+"${previous_args[@]}"} | tee "$run/approvals.json"
 python3 - "$repo" "$run" <<'PY'
 import hashlib,json,pathlib,subprocess,sys
 repo,run=map(pathlib.Path,sys.argv[1:])
 files={str(p.relative_to(run/'source')):hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted((run/'source').rglob('*')) if p.is_file()}
 support={p:hashlib.sha256((repo/p).read_bytes()).hexdigest() for p in [
  'prod/ops/static-launch/Preflight.php','prod/laravel/app/Services/Pages/PagesPreparedAssetUploader.php','prod/laravel/tests/StaticLaunch/PreflightTest.php']}
+approvals={str(p.relative_to(run/'approvals')):hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted((run/'approvals').rglob('*')) if p.is_file()}
 identity={'git_sha':subprocess.check_output(['git','-C',str(repo),'rev-parse','HEAD'],text=True).strip(),
- 'dirty_sha256':hashlib.sha256(json.dumps({'files':files,'support':support},sort_keys=True,separators=(',',':')).encode()).hexdigest()}
+ 'dirty_sha256':hashlib.sha256(json.dumps({'files':files,'support':support,'approvals':approvals},sort_keys=True,separators=(',',':')).encode()).hexdigest()}
 (run/'source-files.json').write_text(json.dumps(files,sort_keys=True,indent=2)+'\n')
 (run/'support-files.json').write_text(json.dumps(support,sort_keys=True,indent=2)+'\n')
+(run/'approvals-files.json').write_text(json.dumps(approvals,sort_keys=True,indent=2)+'\n')
 (run/'source-identity.json').write_text(json.dumps(identity,sort_keys=True,separators=(',',':'))+'\n')
 PY
 node "$run/source/scripts/prepare-minimal-launch.mjs" "$run/namespace" "$run/source-identity.json" > "$run/freeze.json"
@@ -95,16 +109,17 @@ bounded docker rm "$id" >/dev/null; id=''; pending_name=''
 [[ -f "$run/artifacts/site.tar.gz" && ! -L "$run/artifacts/site.tar.gz" && -f "$run/artifacts/site-second.tar.gz" && ! -L "$run/artifacts/site-second.tar.gz" ]]
 
 python3 - "$input" "$run/artifacts/site.tar.gz" "$run/temp" "$run/control/release.json" <<'PY'
-import hashlib,json,os,pathlib,stat,sys,tarfile
+import hashlib,json,os,pathlib,re,stat,sys,tarfile
 inp,artifact,temp,out=map(pathlib.Path,sys.argv[1:])
 canonical=lambda v:(json.dumps(v,ensure_ascii=False,sort_keys=True,separators=(',',':'))+'\n').encode()
 read=lambda p,n:p.read_bytes() if p.is_file() and not p.is_symlink() and p.stat().st_size<=n else (_ for _ in ()).throw(ValueError())
 public_b,manifest_b,identity_b=[read(inp/n,65536) for n in ('public.json','manifest.json','publication-identity.json')]
 public,manifest,identity=map(json.loads,(public_b,manifest_b,identity_b))
 if any(canonical(v)!=b for v,b in ((public,public_b),(manifest,manifest_b),(identity,identity_b))): raise ValueError()
+if not all(re.fullmatch(r'[a-z0-9]+(?:-[a-z0-9]+)*', p['slug']) for p in public['posts']): raise ValueError()
 sha=lambda b:hashlib.sha256(b).hexdigest(); content=sha(public_b); approval=sha(manifest_b)
 if identity!={'version':1,'generation':identity.get('generation'),'content_sha':content,'approval_manifest_hash':approval}: raise ValueError()
-expected={'404.html','index.html','manifest.json','posts/hello-world/index.html','robots.txt','sitemap.xml'}
+expected={'404.html','index.html','manifest.json','robots.txt','sitemap.xml'} | {f"posts/{p['slug']}/index.html" for p in public['posts']}
 with tarfile.open(artifact,'r:gz') as tar:
  members=tar.getmembers(); names=[m.name.removeprefix('./') for m in members]
  if set(names)!=expected or len(names)!=len(expected) or not all(m.isfile() for m in members): raise ValueError()
@@ -125,7 +140,8 @@ import hashlib,json,pathlib,sys
 r=pathlib.Path(sys.argv[1]); sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
 release=json.loads((r/'control/release.json').read_text()); result=json.loads((r/'validate.json').read_text())
 if result.get('state')!='validated' or result.get('release_sha256')!=sha(r/'control/release.json'): raise SystemExit(1)
+articles=json.loads((r/'approvals.json').read_text())['articles']
 print(json.dumps({'candidate':str(r),'git_sha':release['git_sha'],'dirty_sha256':release['dirty_sha256'],
  'artifact_sha256':release['artifact_hash'],'artifact_size':release['artifact_size'],'release_sha256':result['release_sha256'],
- 'marker':release['marker'],'state':'validated'},sort_keys=True,separators=(',',':')))
+ 'marker':release['marker'],'state':'validated','articles':articles},sort_keys=True,separators=(',',':')))
 PY
