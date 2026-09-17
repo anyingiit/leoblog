@@ -51,18 +51,30 @@ bounded docker rm "$id" >/dev/null; id=''; pending_name=''
 
 files=(
   package.json package-lock.json astro.config.mjs scripts/build.mjs scripts/verify-runner.mjs
-  src/lib/api.mjs src/lib/content.mjs src/lib/identity.mjs src/lib/manifest.mjs
+  src/lib/api.mjs src/lib/content.mjs src/lib/identity.mjs src/lib/manifest.mjs src/lib/profile.mjs
   src/layouts/Layout.astro src/components/CommentIsland.astro src/scripts/comments.js
   src/pages/index.astro src/pages/404.astro src/pages/timeline.astro 'src/pages/posts/[slug].astro'
   src/pages/sessions/index.astro 'src/pages/sessions/[id].astro'
   src/pages/archive/index.astro 'src/pages/archive/[slug].astro'
-  tests/api.test.mjs tests/content.test.mjs tests/manifest.test.mjs tests/build.test.mjs
+  tests/api.test.mjs tests/content.test.mjs tests/manifest.test.mjs tests/build.test.mjs tests/profile.test.mjs
   tests/fixtures/public-snapshot.json scripts/prepare-minimal-launch.mjs scripts/serve-minimal.mjs
-  content/minimal-launch/hello-world.md src/minimal/layouts/Layout.astro
+  scripts/article-registry.mjs scripts/approvals.mjs src/minimal/layouts/Layout.astro
   src/minimal/pages/index.astro src/minimal/pages/404.astro 'src/minimal/pages/posts/[slug].astro'
   src/minimal/discovery.mjs src/minimal/pages/sitemap.xml.js src/minimal/pages/robots.txt.js
-  tests/minimal-launch.test.mjs tests/minimal-preview.test.mjs tests/security-toolchain.test.mjs
+  tests/package-copy.mjs tests/minimal-launch.test.mjs tests/minimal-multi.test.mjs tests/minimal-content.test.mjs
+  tests/minimal-preview.test.mjs tests/security-toolchain.test.mjs
+  tests/article-registry.test.mjs tests/approvals.test.mjs
 )
+shopt -s nullglob dotglob
+for entry in "$site"/content/minimal-launch/*; do
+  name="${entry##*/}"
+  if [[ ! -f "$entry" || -L "$entry" || ! "$name" =~ ^[A-Za-z0-9._-]+$ ]]; then
+    printf 'unexpected content entry: content/minimal-launch/%s\n' "$name" >&2
+    exit 1
+  fi
+  files+=("content/minimal-launch/$name")
+done
+shopt -u nullglob dotglob
 args=(--name "$owner" --label "leoblog.owner=$owner" --pull never --platform linux/amd64
   --read-only --memory 1024m --memory-swap 1024m --cpus 1 --pids-limit 128
   --tmpfs /work:rw,size=32m --tmpfs /tmp:rw,exec,size=384m

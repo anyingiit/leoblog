@@ -60,7 +60,7 @@ The coordinator's local integration checkout also provides the read-only T052
 receipt verifier; it is intentionally outside the 54-file GitHub source import:
 
 ```bash
-python3 prod/ops/release/github/verify.py --receipt specs/001-trial-launch-remaining/evidence/T052/repository-pr.json
+# (historical) python3 prod/ops/release/github/verify.py --receipt specs/001-trial-launch-remaining/evidence/T052/repository-pr.json — removed from the tree, see git tag archive/codex-tip-20260916
 ```
 
 It checks local immutable source/harness bindings and fresh GitHub API metadata.
