@@ -1,7 +1,7 @@
 import {defineConfig} from 'astro/config';
 import path from 'node:path';
-const profile=process.env.LEOBLOG_PROFILE||'legacy';
-if (!['legacy','minimal'].includes(profile)) throw new Error('unknown static profile');
+import {resolveProfile} from './src/lib/profile.mjs';
+const profile = resolveProfile();
 export default defineConfig({output:'static',srcDir:profile==='minimal'?'./src/minimal':'./src',
   vite:profile==='minimal'?{publicDir:false}:undefined,
   site:profile==='minimal'?'https://douseful.eu.org':'https://leoblog.example.invalid',

@@ -23,17 +23,36 @@ test("artifact runner requires a verified private identity and rejects OUTPUT_DI
   fs.copyFileSync(path.join(root, "tests/fixtures/public-snapshot.json"), path.join(snapshot, "public.json"));
 
   const missing = spawnSync(process.execPath, [path.join(root, "scripts/build.mjs"), snapshot, artifact], {
-    encoding: "utf8", env: { ...process.env, ASTRO_TELEMETRY_DISABLED: "1" }
+    encoding: "utf8", env: { ...process.env, LEOBLOG_PROFILE: "legacy", ASTRO_TELEMETRY_DISABLED: "1" }
   });
   assert.notEqual(missing.status, 0);
   assert.match(missing.stderr, /publication identity/i);
   assert.equal(fs.existsSync(artifact), false);
 
   const outputDir = spawnSync(process.execPath, [path.join(root, "scripts/build.mjs"), snapshot, artifact], {
-    encoding: "utf8", env: { ...process.env, OUTPUT_DIR: path.join(workspace, "outside"), ASTRO_TELEMETRY_DISABLED: "1" }
+    encoding: "utf8", env: { ...process.env, LEOBLOG_PROFILE: "legacy", OUTPUT_DIR: path.join(workspace, "outside"), ASTRO_TELEMETRY_DISABLED: "1" }
   });
   assert.notEqual(outputDir.status, 0);
   assert.match(outputDir.stderr, /OUTPUT_DIR.*not supported/i);
+});
+
+test("runner requires LEOBLOG_PROFILE before validating snapshot input and never writes the artifact", (t) => {
+  const workspace = fs.mkdtempSync(path.join(os.tmpdir(), "leoblog-profile-required-"));
+  t.after(() => fs.rmSync(workspace, { recursive: true, force: true }));
+  const snapshot = path.join(workspace, "snapshot");
+  const artifact = path.join(workspace, "artifact");
+  fs.mkdirSync(snapshot);
+  fs.copyFileSync(path.join(root, "tests/fixtures/public-snapshot.json"), path.join(snapshot, "public.json"));
+  const publicBytes = fs.readFileSync(path.join(snapshot, "public.json"));
+  const approvalBytes = Buffer.from('{"fixture":"approval"}\n');
+  fs.writeFileSync(path.join(snapshot, "manifest.json"), approvalBytes);
+  fs.writeFileSync(path.join(snapshot, "publication-identity.json"), JSON.stringify({ version: 1, generation: 1, content_sha: createHash("sha256").update(publicBytes).digest("hex"), approval_manifest_hash: createHash("sha256").update(approvalBytes).digest("hex") }));
+  const env = { ...process.env, ASTRO_TELEMETRY_DISABLED: "1" };
+  delete env.LEOBLOG_PROFILE;
+  const result = spawnSync(process.execPath, [path.join(root, "scripts/build.mjs"), snapshot, artifact], { encoding: "utf8", env });
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /LEOBLOG_PROFILE is required/);
+  assert.equal(fs.existsSync(artifact), false);
 });
 
 test("artifact runner rejects every invalid identity before Astro and preserves the existing artifact", (t) => {
@@ -44,7 +63,7 @@ test("artifact runner rejects every invalid identity before Astro and preserves 
   const publicBytes = fs.readFileSync(path.join(snapshot, "public.json")); const manifestBytes = Buffer.from("{}\n"); fs.writeFileSync(path.join(snapshot, "manifest.json"), manifestBytes);
   const valid = { version: 1, generation: 1, content_sha: createHash("sha256").update(publicBytes).digest("hex"), approval_manifest_hash: createHash("sha256").update(manifestBytes).digest("hex") };
   fs.writeFileSync(path.join(snapshot, "publication-identity.json"), JSON.stringify(valid));
-  assert.equal(spawnSync(process.execPath, [path.join(root, "scripts/build.mjs"), snapshot, artifact], { encoding: "utf8", env: { ...process.env, ASTRO_TELEMETRY_DISABLED: "1" } }).status, 0);
+  assert.equal(spawnSync(process.execPath, [path.join(root, "scripts/build.mjs"), snapshot, artifact], { encoding: "utf8", env: { ...process.env, LEOBLOG_PROFILE: "legacy", ASTRO_TELEMETRY_DISABLED: "1" } }).status, 0);
   const original = fs.readFileSync(artifact);
   const invalid = [
     { ...valid, generation: 0 }, { ...valid, generation: -1 }, { ...valid, generation: 1.5 }, { ...valid, generation: Number.MAX_SAFE_INTEGER + 1 },
@@ -53,7 +72,7 @@ test("artifact runner rejects every invalid identity before Astro and preserves 
   ];
   for (const identity of invalid) {
     fs.writeFileSync(path.join(snapshot, "publication-identity.json"), JSON.stringify(identity));
-    const result = spawnSync(process.execPath, [path.join(root, "scripts/build.mjs"), snapshot, artifact], { encoding: "utf8", env: { ...process.env, ASTRO_TELEMETRY_DISABLED: "1" } });
+    const result = spawnSync(process.execPath, [path.join(root, "scripts/build.mjs"), snapshot, artifact], { encoding: "utf8", env: { ...process.env, LEOBLOG_PROFILE: "legacy", ASTRO_TELEMETRY_DISABLED: "1" } });
     assert.notEqual(result.status, 0, JSON.stringify(identity));
     assert.deepEqual(fs.readFileSync(artifact), original, JSON.stringify(identity));
   }
@@ -76,7 +95,7 @@ test("runner builds deterministic artifacts with Laravel snapshot cwd and pre-ex
   fs.writeFileSync(path.join(inputDir, "publication-identity.json"), JSON.stringify({ version: 1, generation, content_sha: contentSha, approval_manifest_hash: approvalManifestHash }));
   const legacy = `${output}.static-build`;
   fs.mkdirSync(legacy); fs.writeFileSync(path.join(legacy, "stale-legacy.html"), "legacy");
-  const env = { ...process.env, PUBLIC_TURNSTILE_SITE_KEY: "test-key", ASTRO_TELEMETRY_DISABLED: "1" };
+  const env = { ...process.env, LEOBLOG_PROFILE: "legacy", PUBLIC_TURNSTILE_SITE_KEY: "test-key", ASTRO_TELEMETRY_DISABLED: "1" };
   delete env.OUTPUT_DIR;
   const hashes = [];
   for (let run = 0; run < 2; run++) {
@@ -119,7 +138,7 @@ test("generation changes marker and artifact when public and approval bytes are 
   fs.copyFileSync(path.join(root, "tests/fixtures/public-snapshot.json"), path.join(snapshot, "public.json"));
   const publicBytes = fs.readFileSync(path.join(snapshot, "public.json")); const approvalBytes = Buffer.from("{}\n"); fs.writeFileSync(path.join(snapshot, "manifest.json"), approvalBytes);
   const content_sha = createHash("sha256").update(publicBytes).digest("hex"); const approval_manifest_hash = createHash("sha256").update(approvalBytes).digest("hex");
-  const build = generation => { fs.writeFileSync(path.join(snapshot, "publication-identity.json"), JSON.stringify({ version: 1, generation, content_sha, approval_manifest_hash })); const result = spawnSync(process.execPath, [path.join(root, "scripts/build.mjs"), snapshot, artifact], { encoding: "utf8", env: { ...process.env, ASTRO_TELEMETRY_DISABLED: "1" } }); assert.equal(result.status, 0, result.stderr); return { artifact: createHash("sha256").update(fs.readFileSync(artifact)).digest("hex"), html: spawnSync("tar", ["-xOzf", artifact, "index.html"], { encoding: "utf8" }).stdout }; };
+  const build = generation => { fs.writeFileSync(path.join(snapshot, "publication-identity.json"), JSON.stringify({ version: 1, generation, content_sha, approval_manifest_hash })); const result = spawnSync(process.execPath, [path.join(root, "scripts/build.mjs"), snapshot, artifact], { encoding: "utf8", env: { ...process.env, LEOBLOG_PROFILE: "legacy", ASTRO_TELEMETRY_DISABLED: "1" } }); assert.equal(result.status, 0, result.stderr); return { artifact: createHash("sha256").update(fs.readFileSync(artifact)).digest("hex"), html: spawnSync("tar", ["-xOzf", artifact, "index.html"], { encoding: "utf8" }).stdout }; };
   const one = build(1); const two = build(2);
   assert.notEqual(one.artifact, two.artifact);
   assert.notEqual(one.html.match(/leoblog-version" content="([0-9a-f]{64})"/)[1], two.html.match(/leoblog-version" content="([0-9a-f]{64})"/)[1]);
@@ -137,7 +156,7 @@ test("real Astro output inventories bundled JS assets with byte hashes and no pr
   fs.writeFileSync(path.join(inputDir, "manifest.json"), approvalBytes);
   fs.writeFileSync(path.join(inputDir, "publication-identity.json"), JSON.stringify({ version: 1, generation: 1, content_sha: createHash("sha256").update(publicBytes).digest("hex"), approval_manifest_hash: createHash("sha256").update(approvalBytes).digest("hex") }));
   const result = spawnSync(process.execPath, [path.join(root, "scripts/build.mjs"), inputDir, output], {
-    cwd: inputDir, encoding: "utf8", env: { ...process.env, ASTRO_TELEMETRY_DISABLED: "1" }
+    cwd: inputDir, encoding: "utf8", env: { ...process.env, LEOBLOG_PROFILE: "legacy", ASTRO_TELEMETRY_DISABLED: "1" }
   });
   assert.equal(result.status, 0, result.stderr || result.stdout);
   const listing = spawnSync("tar", ["-tzf", output], { encoding: "utf8" });
@@ -169,17 +188,17 @@ test("rebuild replaces stale routes and a failed build preserves the existing ar
     fs.writeFileSync(path.join(snapshot, "publication-identity.json"), JSON.stringify({ version: 1, generation: 1, content_sha: createHash("sha256").update(publicBytes).digest("hex"), approval_manifest_hash: createHash("sha256").update(approvalBytes).digest("hex") }));
   };
   fs.copyFileSync(path.join(root, "tests/fixtures/public-snapshot.json"), path.join(snapshot, "public.json")); writeIdentity();
-  let result = spawnSync(process.execPath, [path.join(root, "scripts/build.mjs"), snapshot, artifact], { encoding: "utf8", env: { ...process.env, ASTRO_TELEMETRY_DISABLED: "1" } });
+  let result = spawnSync(process.execPath, [path.join(root, "scripts/build.mjs"), snapshot, artifact], { encoding: "utf8", env: { ...process.env, LEOBLOG_PROFILE: "legacy", ASTRO_TELEMETRY_DISABLED: "1" } });
   assert.equal(result.status, 0, result.stderr);
   const original = fs.readFileSync(artifact);
   const updated = JSON.parse(fs.readFileSync(path.join(snapshot, "public.json"), "utf8")); updated.posts = [];
   fs.writeFileSync(path.join(snapshot, "public.json"), JSON.stringify(updated)); writeIdentity();
-  result = spawnSync(process.execPath, [path.join(root, "scripts/build.mjs"), snapshot, artifact], { encoding: "utf8", env: { ...process.env, ASTRO_TELEMETRY_DISABLED: "1" } });
+  result = spawnSync(process.execPath, [path.join(root, "scripts/build.mjs"), snapshot, artifact], { encoding: "utf8", env: { ...process.env, LEOBLOG_PROFILE: "legacy", ASTRO_TELEMETRY_DISABLED: "1" } });
   assert.equal(result.status, 0, result.stderr);
   const listing = spawnSync("tar", ["-tzf", artifact], { encoding: "utf8" }).stdout;
   assert.equal(listing.includes("posts/hello/index.html"), false);
   fs.writeFileSync(path.join(snapshot, "publication-identity.json"), "{}");
-  result = spawnSync(process.execPath, [path.join(root, "scripts/build.mjs"), snapshot, artifact], { encoding: "utf8", env: { ...process.env, ASTRO_TELEMETRY_DISABLED: "1" } });
+  result = spawnSync(process.execPath, [path.join(root, "scripts/build.mjs"), snapshot, artifact], { encoding: "utf8", env: { ...process.env, LEOBLOG_PROFILE: "legacy", ASTRO_TELEMETRY_DISABLED: "1" } });
   assert.notEqual(result.status, 0);
   assert.notDeepEqual(fs.readFileSync(artifact), original);
   assert.equal(spawnSync("tar", ["-tzf", artifact]).status, 0);
@@ -189,7 +208,7 @@ test("runner subprocess fails closed without local Astro and never invokes PATH 
   const workspace = fs.mkdtempSync(path.join(os.tmpdir(), "leoblog-missing-deps-"));
   t.after(() => fs.rmSync(workspace, { recursive: true, force: true }));
   // Copy only the runner and its two imports, never host dependencies or environment files.
-  for (const relative of ["scripts/build.mjs", "src/lib/content.mjs", "src/lib/identity.mjs", "src/lib/manifest.mjs"]) {
+  for (const relative of ["scripts/build.mjs", "src/lib/content.mjs", "src/lib/identity.mjs", "src/lib/manifest.mjs", "src/lib/profile.mjs"]) {
     const target = path.join(workspace, relative);
     fs.mkdirSync(path.dirname(target), { recursive: true });
     fs.copyFileSync(path.join(root, relative), target);
@@ -205,7 +224,7 @@ test("runner subprocess fails closed without local Astro and never invokes PATH 
   fs.writeFileSync(output, "");
   const marker = path.join(workspace, "npx-invoked");
   fs.writeFileSync(path.join(workspace, "npx"), `#!/bin/sh\ntouch '${marker}'\nexit 99\n`, { mode: 0o755 });
-  const env = { ...process.env, PATH: `${workspace}:${process.env.PATH}` };
+  const env = { ...process.env, LEOBLOG_PROFILE: "legacy", PATH: `${workspace}:${process.env.PATH}` };
   delete env.OUTPUT_DIR;
   const result = spawnSync(process.execPath, [path.join(workspace, "scripts/build.mjs"), input, output], { cwd: input, encoding: "utf8", env });
   assert.equal(result.status, 1, result.stderr);

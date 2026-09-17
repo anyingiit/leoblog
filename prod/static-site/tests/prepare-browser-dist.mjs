@@ -23,7 +23,7 @@ const approvalBytes = Buffer.from('{"fixture":"approval"}\n');
 fs.writeFileSync(path.join(snapshot, "manifest.json"), approvalBytes);
 const crypto = await import("node:crypto");
 fs.writeFileSync(path.join(snapshot, "publication-identity.json"), JSON.stringify({ version: 1, generation: 1, content_sha: crypto.createHash("sha256").update(publicBytes).digest("hex"), approval_manifest_hash: crypto.createHash("sha256").update(approvalBytes).digest("hex") }));
-spawnSync(process.execPath, [path.join(packageRoot, "scripts/build.mjs"), snapshot, artifact], { cwd: snapshot, stdio: "inherit", env: { ...process.env, PUBLIC_TURNSTILE_SITE_KEY: "test-key", ASTRO_TELEMETRY_DISABLED: "1" } });
+spawnSync(process.execPath, [path.join(packageRoot, "scripts/build.mjs"), snapshot, artifact], { cwd: snapshot, stdio: "inherit", env: { ...process.env, LEOBLOG_PROFILE: "legacy", PUBLIC_TURNSTILE_SITE_KEY: "test-key", ASTRO_TELEMETRY_DISABLED: "1" } });
 const dist = path.join(workspace, "dist");
 fs.mkdirSync(dist);
 spawnSync("tar", ["-xzf", artifact, "-C", dist], { stdio: "inherit" });
