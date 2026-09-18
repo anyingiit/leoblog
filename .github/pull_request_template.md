@@ -1,31 +1,14 @@
-## Change and purpose
+<!-- Source: GitHub pull request template (official) — https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/creating-a-pull-request-template-for-your-repository -->
+## Description
 
-Describe the independently useful fix, feature or security update and its visible result.
+<!-- What does this pull request change, and why? -->
 
-- Tasks:
-- Version:
-- Tested candidate source SHA:
-- GitHub base / head SHA:
-- Artifact SHA-256:
+## Related issue
 
-## Checks and review
+Closes #
 
-List the relevant commands/results and the exact source, dependency and artifact identities.
-For reused checks, link the accepted evidence and explain the byte comparison that permits reuse.
-Record the Agent review; same-author review evidence does not imply an independent GitHub APPROVE.
+## Checklist
 
-## Preview and release
-
-- Status: pending / ready / submitted / unknown / failed / released
-- Immutable version preview URL: pending — give the reason until actually deployed
-- Deployment ID:
-- Next action and owner:
-
-Mark released only after the current deployment and complete version readback pass.
-An open or merged PR does not establish deployment success.
-
-## Known limitations
-
-Record unresolved or untested scope. Keep unrelated backlog out of this release's prerequisites.
-
-[Release workflow](https://github.com/anyingiit/leoblog/blob/master/docs/operations/github-pr-workflow.md)
+- [ ] Tests pass locally
+- [ ] `CHANGELOG.md` is updated (if applicable)
+- [ ] Documentation is updated (if applicable)
