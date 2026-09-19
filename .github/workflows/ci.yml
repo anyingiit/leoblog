@@ -1,11 +1,31 @@
 # Source: GitHub starter workflow "Simple workflow" (MIT) — https://github.com/actions/starter-workflows/blob/main/ci/blank.yml
+#
+# Repaired by repocurator (feature 002):
+#   - `push` and `pull_request` triggered on `main`; this repository's default
+#     branch is `master`, so the workflow had never run on a push to it.
+#   - the test job ran the starter's placeholder echo. Replaced with the
+#     Node.js package under prod/static-site: `npm ci` against its committed
+#     package-lock.json, then the pure-Node subset of its test suite that
+#     prod/static-site/README.md itself documents as needing only host
+#     Node.js -- manifest, content, security-toolchain, api,
+#     article-registry, approvals and minimal-content, 80 tests in 8 files.
+#   - deliberately left out of that command: build.mjs/minimal-launch/
+#     minimal-multi's tests, which each invoke a real `astro build` and share
+#     one `.astro/` cache directory at the package root, so running them
+#     concurrently (Node's test runner parallelizes by file) races on that
+#     cache; and runner-ownership/test-minimal-pinned.sh's own Docker-backed
+#     suite, which is the project's authoritative, pinned-image test and is
+#     meant to run under Docker (see prod/static-site/scripts/
+#     test-minimal-pinned.sh), not a bare Actions runner. Both are real,
+#     passing tests locally -- they are excluded for reliability in this
+#     job's environment, not because they are broken.
 name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [master]
   pull_request:
-    branches: [main]
+    branches: [master]
   workflow_dispatch:
 
 # The workflow token is read-only by default.
@@ -46,13 +66,23 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: prod/static-site
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
-      # Replace the step below with your project's test command. Pin any setup
-      # action you add to a full commit SHA, like the checkout step above.
-      - name: Run tests
-        run: echo "No tests yet. Replace this step with your project's test command."
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: prod/static-site/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Test
+        run: node --test tests/minimal-preview.test.mjs tests/manifest.test.mjs tests/content.test.mjs tests/security-toolchain.test.mjs tests/api.test.mjs tests/article-registry.test.mjs tests/approvals.test.mjs tests/minimal-content.test.mjs
